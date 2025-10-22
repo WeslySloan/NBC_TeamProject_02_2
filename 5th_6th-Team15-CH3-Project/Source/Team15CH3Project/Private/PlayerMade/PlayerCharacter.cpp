@@ -6,7 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-//#include "Input/InputAction.h"
+#include "InputAction.h"
 
 
 //#include "AutoAttackComponent.h" 
@@ -22,9 +22,11 @@ APlayerCharacter::APlayerCharacter()
     CameraBoom->SetupAttachment(RootComponent);
 
     CameraBoom->TargetArmLength = 1500.0f;
-    CameraBoom->SetRelativeRotation(FRotator(-60.0f, 0.0f, 0.0f));
+    CameraBoom->SetRelativeRotation(FRotator(-120.0f, 0.0f, 0.0f));
     CameraBoom->bUsePawnControlRotation = false;
     CameraBoom->bDoCollisionTest = false;
+    CameraBoom->bInheritYaw = false;  
+    CameraBoom->bInheritRoll = false;
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -35,7 +37,7 @@ APlayerCharacter::APlayerCharacter()
     // === 3. 이동 및 회전 설정 ===
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
-    GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 10000.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned

@@ -9,7 +9,11 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"CommonUI",
+				"DeveloperSettings",
+				"CoreUObject",
+				"AIModule"
 			]
 		}
 	],
@@ -20,6 +24,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }
