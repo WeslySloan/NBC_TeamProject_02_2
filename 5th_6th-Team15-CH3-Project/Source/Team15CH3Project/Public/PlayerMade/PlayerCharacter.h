@@ -8,7 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-class UAutoAttackComponent; 
+class UAutoAttackComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -19,7 +19,6 @@ class TEAM15CH3PROJECT_API APlayerCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
-    // Sets default values for this character's properties
     APlayerCharacter();
 
 protected:

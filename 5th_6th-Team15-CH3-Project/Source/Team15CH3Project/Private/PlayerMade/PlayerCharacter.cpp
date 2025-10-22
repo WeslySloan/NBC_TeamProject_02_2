@@ -9,9 +9,6 @@
 #include "InputAction.h"
 
 
-//#include "AutoAttackComponent.h" 
-
-
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -25,19 +22,16 @@ APlayerCharacter::APlayerCharacter()
     CameraBoom->SetRelativeRotation(FRotator(-120.0f, 0.0f, 0.0f));
     CameraBoom->bUsePawnControlRotation = false;
     CameraBoom->bDoCollisionTest = false;
-    CameraBoom->bInheritYaw = false;  
+    CameraBoom->bInheritYaw = false;
     CameraBoom->bInheritRoll = false;
 
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
-    // === 2. 자동 공격 컴포넌트 추가 (나중에 만들 컴포넌트) ===
-    //AutoAttackComponent = CreateDefaultSubobject<UAutoAttackComponent>(TEXT("AutoAttackComponent"));
-
-    // === 3. 이동 및 회전 설정 ===
+    // === 2. 이동 및 회전 설정 ===
     bUseControllerRotationYaw = false;
-    GetCharacterMovement()->bOrientRotationToMovement = true;
-    GetCharacterMovement()->RotationRate = FRotator(0.0f, 10000.0f, 0.0f);
+    GetCharacterMovement()->bOrientRotationToMovement = false;
+    GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -88,14 +82,12 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
         const FRotator Rotation = CameraBoom->GetComponentRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-        // Forward/Backward (Y축)
         if (!FMath::IsNearlyZero(MovementVector.Y))
         {
             const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
             AddMovementInput(ForwardDirection, MovementVector.Y);
         }
 
-        // Right/Left (X축)
         if (!FMath::IsNearlyZero(MovementVector.X))
         {
             const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
