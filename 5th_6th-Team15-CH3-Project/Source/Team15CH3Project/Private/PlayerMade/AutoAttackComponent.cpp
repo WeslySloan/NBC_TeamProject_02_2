@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "PlayerMade/AutoAttackComponent.h"
@@ -20,11 +20,9 @@ void UAutoAttackComponent::BeginPlay()
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn)
     {
-        // Owner¿¡¼­ StatsComponent¸¦ Ã£½À´Ï´Ù.
         StatsComponent = OwnerPawn->FindComponentByClass<UCharacterStatsComponent>();
     }
 
-    // °ø°Ý ¼Óµµ¿¡ µû¶ó ÀÚµ¿ °ø°Ý Å¸ÀÌ¸Ó ½ÃÀÛ
     if (StatsComponent && ProjectileClass)
     {
         StartAutoAttack();
@@ -32,7 +30,7 @@ void UAutoAttackComponent::BeginPlay()
 }
 
 // ====================================================================
-// °ø°Ý Á¦¾î ·ÎÁ÷
+// ê³µê²© ì œì–´ ë¡œì§
 // ====================================================================
 
 void UAutoAttackComponent::StartAutoAttack()
@@ -44,7 +42,7 @@ void UAutoAttackComponent::StartAutoAttack()
         this,
         &UAutoAttackComponent::FireProjectile,
         AttackInterval,
-        true // ¹Ýº¹ ¼³Á¤
+        true
     );
 }
 
@@ -52,14 +50,13 @@ float UAutoAttackComponent::CalculateAttackInterval() const
 {
     if (StatsComponent && StatsComponent->AttackSpeed > 0)
     {
-        // °ø°Ý ¼Óµµ(AttackSpeed)´Â ÃÊ´ç °ø°Ý È½¼öÀÌ¹Ç·Î, ÁÖ±â´Â 1 / AttackSpeed ÀÔ´Ï´Ù.
         return 1.0f / StatsComponent->AttackSpeed;
     }
-    return 1.0f; // ±âº» ÁÖ±â 1ÃÊ
+    return 1.0f;
 }
 
 // ====================================================================
-// Å¸°Ù ¹× ¹ß»ç ·ÎÁ÷
+// íƒ€ê²Ÿ ë° ë°œì‚¬ ë¡œì§
 // ====================================================================
 
 APawn* UAutoAttackComponent::FindTarget() const
@@ -117,17 +114,17 @@ void UAutoAttackComponent::FireProjectile()
     UWorld* World = GetWorld();
     if (!World) return;
 
-    // ¸ó½ºÅÍ °¨Áö
+    // ëª¬ìŠ¤í„° ê°ì§€
     APawn* Target = FindTarget();
 
-    // Å¸°Ù¿¡ µû¶ó ¹ß»ç ¹æÇâ °áÁ¤
+    // íƒ€ê²Ÿì— ë”°ë¼ ë°œì‚¬ ë°©í–¥ ê²°ì •
     FRotator BaseRotation = GetFireRotation(Target);
 
-    int32 Count = StatsComponent->ProjectileCount; // Åº ¹ß»ç·® ¹Ý¿µ
+    int32 Count = StatsComponent->ProjectileCount; // íƒ„ ë°œì‚¬ëŸ‰ ë°˜ì˜
 
     FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(0, 0, 50.0f);
 
-    // ProjectileCount¿¡ µû¸¥ ¹ß»ç °¢µµ °è»ê
+    // ProjectileCountì— ë”°ë¥¸ ë°œì‚¬ ê°ë„ ê³„ì‚°
     float SpreadAngle = 10.0f;
     float HalfAngle = SpreadAngle * (Count - 1) / 2.0f;
 
@@ -144,13 +141,13 @@ void UAutoAttackComponent::FireProjectile()
         FActorSpawnParameters Params;
         Params.Owner = GetOwner();
 
-        // Åõ»çÃ¼ »ý¼º
+        // íˆ¬ì‚¬ì²´ ìƒì„±
         AActor* NewProjectile = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, FinalRotation, Params);
 
-        // µ¥¹ÌÁö ÀÌº¥Æ® (ÀÓ½Ã ±¸Çö)
+        // ë°ë¯¸ì§€ ì´ë²¤íŠ¸ (ìž„ì‹œ)
         if (NewProjectile)
         {
             UE_LOG(LogTemp, Warning, TEXT("Fired Projectile with Damage: %f"), StatsComponent->AttackDamage);
         }
     }
-}
+}.

@@ -28,8 +28,8 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
     UCameraComponent* FollowCamera;
 
-    //UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    //UAutoAttackComponent* AutoAttackComponent; 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UAutoAttackComponent* AutoAttackComponent; 
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
     UInputMappingContext* InputMappingContext;

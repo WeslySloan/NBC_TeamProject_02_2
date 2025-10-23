@@ -1,17 +1,16 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h" // ?? UActorComponent »ó¼ÓÀ» À§ÇØ ÇÊ¿ä
+#include "Components/ActorComponent.h"
 #include "AutoAttackComponent.generated.h"
 
-// Àü¹æ ¼±¾ğ
+
 class APlayerCharacter;
 class UCharacterStatsComponent;
-class APawn; // ¸ó½ºÅÍ Å¸°Ù ÇÊÅÍ¸µÀ» À§ÇØ ÇÊ¿ä
+class APawn;
 
-// ?? Å¬·¡½º ÀÌ¸§°ú »ó¼ÓÀ» UActorComponent·Î º¯°æ
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TEAM15CH3PROJECT_API UAutoAttackComponent : public UActorComponent
 {
@@ -21,38 +20,37 @@ public:
     UAutoAttackComponent();
 
 protected:
-    // UActorComponentÀÇ Ç¥ÁØ ÇÔ¼ö ¿À¹ö¶óÀÌµå
+    // UActorComponentì˜ í‘œì¤€ í•¨ìˆ˜ ì˜¤ë²„ë¼ì´ë“œ
     virtual void BeginPlay() override;
     
 public:
-    // ?? BP¿¡¼­ ¼³Á¤ÇÒ Åõ»çÃ¼ Å¬·¡½º
+    // BPì—ì„œ ì„¤ì •í•  íˆ¬ì‚¬ì²´ í´ë˜ìŠ¤
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
     TSubclassOf<AActor> ProjectileClass; 
     
-    // ?? ¸ó½ºÅÍ °¨Áö ¹üÀ§
+    // ëª¬ìŠ¤í„° ê°ì§€ ë²”ìœ„
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
     float AttackRange = 1000.0f; 
     
-    // ?? ¸ó½ºÅÍ Å¬·¡½º (BP_AIMonsterCharacter ÇÊÅÍ¸µ¿ë)
+    // ëª¬ìŠ¤í„° í´ë˜ìŠ¤ (BP_AIMonsterCharacter í•„í„°ë§ìš©)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
-    TSubclassOf<APawn> MonsterClassFilter; // APawnÀ¸·Î ¼³Á¤ÇÏ¿© BP_AIMonsterCharacter¸¦ ¹Ş½À´Ï´Ù.
-
+    TSubclassOf<APawn> MonsterClassFilter;
 private:
     UPROPERTY()
     UCharacterStatsComponent* StatsComponent; 
     
     FTimerHandle AttackTimerHandle;
 
-    // °ø°İ ½ÃÀÛ/Á¦¾î ÇÔ¼ö
+    // ê³µê²© ì‹œì‘/ì œì–´ í•¨ìˆ˜
     void StartAutoAttack();
     void FireProjectile();
 
-    // ¸ó½ºÅÍ °¨Áö ¹× Å¸°Ù ¼³Á¤ ÇÔ¼ö
+    // ëª¬ìŠ¤í„° ê°ì§€ ë° íƒ€ê²Ÿ ì„¤ì • í•¨ìˆ˜
     APawn* FindTarget() const;
     
-    // ¹ß»ç ¹æÇâ °áÁ¤ ÇÔ¼ö
+    // ë°œì‚¬ ë°©í–¥ ê²°ì • í•¨ìˆ˜
     FRotator GetFireRotation(const APawn* Target) const;
 
-    // °ø°İ ¼Óµµ¿¡ µû¸¥ ¹ß»ç ÁÖ±â °è»ê
+    // ê³µê²© ì†ë„ì— ë”°ë¥¸ ë°œì‚¬ ì£¼ê¸° ê³„ì‚°
     float CalculateAttackInterval() const;
 };
