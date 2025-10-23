@@ -2,12 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "UIcontents/FrontendTypes/FrontendEnumtendTypes.h"
 #include "FrontendUISubsystem.generated.h"
 
 
 class UWidget_PrimaryLayout;
 struct FGameplayTag;
 class UWidget_ActivatableBase;
+class UFrontendCommonButtonBase;
 
 enum class EAsyncPushWidgetState : uint8
 {
@@ -15,6 +17,12 @@ enum class EAsyncPushWidgetState : uint8
 	AfterPush
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+	FOnButtonDescriptionTextUpdatedDelegate, 
+	UFrontendCommonButtonBase*,
+	BroadcastingButton, 
+	FText, 
+	DescriptionText);
 
 UCLASS()
 class TEAM15CH3PROJECT_API UFrontendUISubsystem : public UGameInstanceSubsystem
@@ -34,6 +42,14 @@ public:
 
 	void PushSoftWidgetToStackAynsc(const FGameplayTag& InWidgetStackTag, TSoftClassPtr<UWidget_ActivatableBase> 
 		InSoftWidgetClass, TFunction<void(EAsyncPushWidgetState, UWidget_ActivatableBase*)> AysncPushStateCallback);
+
+	void PushConfirmScreenToModalStackAynsc(EConfirmScreenType InScreenType, 
+		const FText& InScreenTitle, const FText& InScreenMsg, 
+		TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;
+
 private:
 	UPROPERTY(Transient)
 	UWidget_PrimaryLayout* CreatedPrimaryLayout;

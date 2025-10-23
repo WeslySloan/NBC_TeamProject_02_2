@@ -13,4 +13,5 @@ namespace FrontendGamePlayTags
 	//Frontend Widgets
 	TEAM15CH3PROJECT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Widget_PressAnyKeyScreen);
 	TEAM15CH3PROJECT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Widget_MainMenuScreen);
+	TEAM15CH3PROJECT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Frontend_Widget_ConfirmScreen);
 }

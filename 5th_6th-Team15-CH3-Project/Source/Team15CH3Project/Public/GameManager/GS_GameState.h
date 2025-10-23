@@ -14,30 +14,30 @@ class TEAM15CH3PROJECT_API AGS_GameState : public AGameState
 public:
 	AGS_GameState();
 
-    //ÇÃ·¹ÀÌ¾î Ã¼·Â
+    //í”Œë ˆì´ì–´ ì²´ë ¥
     UPROPERTY(BlueprintReadWrite, Replicated, Category = "Player Stats")
     float Stamina;
 
-    //ÇöÀç ¿şÀÌºê
+    //í˜„ì¬ ì›¨ì´ë¸Œ
     UPROPERTY(BlueprintReadWrite, Replicated, Category = "Wave Stats")
     int32 CurrentWave;
 
-    //º¸½º Ã³Ä¡ ¿©ºÎ
+    //ë³´ìŠ¤ ì²˜ì¹˜ ì—¬ë¶€
     UPROPERTY(BlueprintReadWrite, Replicated, Category = "Wave Stats")
     bool bBossDefeated;
 
-    //¹Ì¼Ç ½ÇÆĞ ¿©ºÎ
+    //ë¯¸ì…˜ ì‹¤íŒ¨ ì—¬ë¶€
     UPROPERTY(BlueprintReadWrite, Replicated, Category = "Mission")
     bool bMissionFailed;
 
-    //Àû Ã³Ä¡ ¼ö
+    //ì  ì²˜ì¹˜ ìˆ˜
     UPROPERTY(BlueprintReadWrite, Replicated, Category = "Player Stats")
     int32 EnemyKillCount;
 
 private:
-    // ÇÃ·¹ÀÌ¾î Ã¼·Â °¨¼Ò
+    // í”Œë ˆì´ì–´ ì²´ë ¥ ê°ì†Œ
     void ModifyPlayerHealth(float Amount);
 
-    // Àû Ã³Ä¡ Áõ°¡
+    // ì  ì²˜ì¹˜ ì¦ê°€
     void AddEnemyKillCount();
 };

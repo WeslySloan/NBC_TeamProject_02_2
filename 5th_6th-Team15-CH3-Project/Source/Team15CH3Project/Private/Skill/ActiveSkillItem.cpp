@@ -2,7 +2,7 @@
 #include "PlayerMade/PlayerCharacter.h"
 AActiveSkillItem::AActiveSkillItem()
 {
-	StackCnt = 0;
+	ActiveSkillData.StackCnt = 0;
 	ActiveType = EActiveSkillItemType::None;
 }
 

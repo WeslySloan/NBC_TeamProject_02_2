@@ -8,14 +8,14 @@
 
 AGM_GameMode::AGM_GameMode()
 {
-    // Tick È°¼ºÈ­ 
+    // Tick í™œì„±í™” 
     PrimaryActorTick.bCanEverTick = true;
 
-    // ±âº»°ª 
+    // ê¸°ë³¸ê°’ 
     bIsGameOver = false;
     MissionSpawnDelay = 10.0f;
 
-    // GameState Å¬·¡½º ÁöÁ¤ 
+    // GameState í´ë˜ìŠ¤ ì§€ì • 
     GameStateClass = AGS_GameState::StaticClass();
 }
 
@@ -29,10 +29,10 @@ void AGM_GameMode::StartGame()
 {
     bIsGameOver = false;
 
-    // °ÔÀÓ½ºÅ×ÀÌÆ® ºÒ·¯¿À±â
+    // ê²Œì„ìŠ¤í…Œì´íŠ¸ ë¶ˆëŸ¬ì˜¤ê¸°
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        // Ã³À½ »ı¼º½Ã ÃÊ±âÈ­
+        // ì²˜ìŒ ìƒì„±ì‹œ ì´ˆê¸°í™”
         GS->EnemyKillCount= 0;
         GS->Stamina = 100.0f;
         GS->CurrentWave = 0;
@@ -42,7 +42,7 @@ void AGM_GameMode::StartGame()
 
     ResetGame();
 
-    // ÀÏÁ¤ ½Ã°£ ÈÄ ¹Ì¼Ç »ı¼º 
+    // ì¼ì • ì‹œê°„ í›„ ë¯¸ì…˜ ìƒì„± 
     GetWorldTimerManager().SetTimer(
         MissionTimerHandle,
         this,
@@ -50,13 +50,13 @@ void AGM_GameMode::StartGame()
         MissionSpawnDelay,
         false
     );
-    //Ã¹¹øÂ° ¿şÀÌºê
+    //ì²«ë²ˆì§¸ ì›¨ì´ë¸Œ
     StartNextWave();
 }
 
 void AGM_GameMode::ResetGame()
 {
-    //ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ »ı¼º ÈÄ ·ÎÁ÷ ÀÛ¼ºÇÏ±â
+    //í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ ìƒì„± í›„ ë¡œì§ ì‘ì„±í•˜ê¸°
 }
 
 
@@ -66,38 +66,38 @@ void AGM_GameMode::StartNextWave()
 
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        // ´ÙÀ½ ¿şÀÌºê
+        // ë‹¤ìŒ ì›¨ì´ë¸Œ
         GS->CurrentWave++;
     }
-    // Àû ½ºÆù
+    // ì  ìŠ¤í°
     SpawnEnemiesForWave();
 }
 
 void AGM_GameMode::SpawnEnemiesForWave()
 {
-    // 1.Àû ½ºÆù ·ÎÁ÷ ÀÛ¼ºÇÏ±â
+    // 1.ì  ìŠ¤í° ë¡œì§ ì‘ì„±í•˜ê¸°
 }
 
 void AGM_GameMode::GenerateMission()
 {
-    // 2.·£´ı ¹Ì¼Ç »ı¼º ·ÎÁ÷ ÀÛ¼ºÇÏ±â
+    // 2.ëœë¤ ë¯¸ì…˜ ìƒì„± ë¡œì§ ì‘ì„±í•˜ê¸°
 }
 
 void AGM_GameMode::MissionSuccess()
 {
-    // ¹Ì¼Ç ¼º°ø½Ã Ä³¸¯ÅÍ °­È­ ·ÎÁ÷ ÀÛ¼ºÇØÁÖ¼¼¿ä
+    // ë¯¸ì…˜ ì„±ê³µì‹œ ìºë¦­í„° ê°•í™” ë¡œì§ ì‘ì„±í•´ì£¼ì„¸ìš”
 }
 
 void AGM_GameMode::MissionFail()
 {
-    // ¹Ì¼Ç ½ÇÆĞ½Ã Àû °­È­ ·ÎÁ÷ ÀÛ¼ºÇØÁÖ¼¼¿ä
+    // ë¯¸ì…˜ ì‹¤íŒ¨ì‹œ ì  ê°•í™” ë¡œì§ ì‘ì„±í•´ì£¼ì„¸ìš”
 }
 
 void AGM_GameMode::CheckWinCondition()
 {
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        // º¸½º°¡ Ã³Ä¡ ½Ã °ÔÀÓ Á¾·á
+        // ë³´ìŠ¤ê°€ ì²˜ì¹˜ ì‹œ ê²Œì„ ì¢…ë£Œ
         if (GS->bBossDefeated)
         {
             EndGame();
@@ -109,7 +109,7 @@ void AGM_GameMode::CheckLoseCondition()
 {
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        // Ã¼·Â 0 ÀÌÇÏÀÏ ½Ã °ÔÀÓ ¿À¹ö
+        // ì²´ë ¥ 0 ì´í•˜ì¼ ì‹œ ê²Œì„ ì˜¤ë²„
         if (GS->Stamina <= 0)
         {
             EndGame();
@@ -123,7 +123,7 @@ void AGM_GameMode::EndGame()
 
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        //°ÔÀÓ Á¾·á UI Ãâ·Â
+        //ê²Œì„ ì¢…ë£Œ UI ì¶œë ¥
     }
 }
 
@@ -133,8 +133,8 @@ void AGM_GameMode::PrintCurrentWave()
 
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        //UIÃâ·ÂÀ¸·Î ¹Ù²Ù±â
-        UE_LOG(LogTemp, Log, TEXT("ÇöÀç ¿şÀÌºê: %d"), GS->CurrentWave);
+        //UIì¶œë ¥ìœ¼ë¡œ ë°”ê¾¸ê¸°
+        UE_LOG(LogTemp, Log, TEXT("í˜„ì¬ ì›¨ì´ë¸Œ: %d"), GS->CurrentWave);
     }
 }
 
@@ -145,7 +145,7 @@ void AGM_GameMode::PlayerHit(float Damage)
 
     if (AGS_GameState* GS = GetGameState<AGS_GameState>())
     {
-        //°ø°İ Ã³¸® ÈÄ ÆĞ¹è Á¶°Ç È®ÀÎ
+        //ê³µê²© ì²˜ë¦¬ í›„ íŒ¨ë°° ì¡°ê±´ í™•ì¸
         //GS->ModifyPlayerHealth(-Damage);
         CheckLoseCondition();
     }

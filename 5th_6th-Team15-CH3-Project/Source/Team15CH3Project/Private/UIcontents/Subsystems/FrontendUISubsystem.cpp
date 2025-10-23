@@ -4,6 +4,9 @@
 #include "Widgets/CommonActivatableWidgetContainer.h"
 #include "UIcontents/Widgets/Widget_ActivatableBase.h"
 #include "UIContents/FrontendDebugHelper.h"
+#include "UIcontents/FrontendGamePlayTag.h"
+#include "UIcontents/Widgets/Widget_ConfirmScreen.h"
+#include "UIcontents/FrontendFunctionLibrary.h"
 
 UFrontendUISubsystem* UFrontendUISubsystem::Get(const UObject* WorldContextObject)
 {
@@ -64,4 +67,9 @@ void UFrontendUISubsystem::PushSoftWidgetToStackAynsc(const FGameplayTag& InWidg
 			}
 		)
 	);
+}
+
+void UFrontendUISubsystem::PushConfirmScreenToModalStackAynsc(EConfirmScreenType InScreenType, const FText& InScreenTitle, const FText& InScreenMsg, TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback)
+{
+	// 내일 작성
 }

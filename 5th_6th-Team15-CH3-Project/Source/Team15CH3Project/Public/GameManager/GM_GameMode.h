@@ -21,55 +21,55 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    //¹Ì¼Ç Å¸ÀÌ¸Ó
+    //ë¯¸ì…˜ íƒ€ì´ë¨¸
     FTimerHandle MissionTimerHandle;
 
-    //°ÔÀÓ ¿À¹ö ¿©ºÎ
+    //ê²Œì„ ì˜¤ë²„ ì—¬ë¶€
     bool bIsGameOver;
 
-    //¹Ì¼Ç »ı¼º ½Ã°£
+    //ë¯¸ì…˜ ìƒì„± ì‹œê°„
     float MissionSpawnDelay;
 
 public:
-    //°ÔÀÓ ½ÃÀÛ
+    //ê²Œì„ ì‹œì‘
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void StartGame();
-    //°ÔÀÓ Á¾·á
+    //ê²Œì„ ì¢…ë£Œ
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void EndGame();
-    // ÇÃ·¹ÀÌ¾î ¸®½ºÆù
+    // í”Œë ˆì´ì–´ ë¦¬ìŠ¤í°
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void ResetGame();
 
-    //¿şÀÌºê 
+    //ì›¨ì´ë¸Œ 
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void StartNextWave();
-    //Àû ½ºÆù
+    //ì  ìŠ¤í°
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void SpawnEnemiesForWave();
 
-    // ¹Ì¼Ç »ı¼º
+    // ë¯¸ì…˜ ìƒì„±
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void GenerateMission();
-    //¹Ì¼Ç ¼º°ø
+    //ë¯¸ì…˜ ì„±ê³µ
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void MissionSuccess();
-    //¹Ì¼Ç ½ÇÆĞ
+    //ë¯¸ì…˜ ì‹¤íŒ¨
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void MissionFail();
 
-    //°ÔÀÓ Å¬¸®¾î Á¶°Ç
+    //ê²Œì„ í´ë¦¬ì–´ ì¡°ê±´
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void CheckWinCondition();
-    //°ÔÀÓ ¿À¹ö Á¶°Ç
+    //ê²Œì„ ì˜¤ë²„ ì¡°ê±´
     UFUNCTION(BlueprintCallable, Category = "Game Flow")
     void CheckLoseCondition();
 
 
-    //¿şÀÌºê ´Ü°è (Á¡¼ö) Ãâ·Â
+    //ì›¨ì´ë¸Œ ë‹¨ê³„ (ì ìˆ˜) ì¶œë ¥
     UFUNCTION(BlueprintCallable, Category = "Player Stats")
     void PrintCurrentWave();
-    //°ø°İ
+    //ê³µê²©
     UFUNCTION(BlueprintCallable, Category = "Player Stats")
     void PlayerHit(float Damage);
 };

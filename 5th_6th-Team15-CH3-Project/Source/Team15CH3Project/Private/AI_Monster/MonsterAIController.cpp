@@ -1,25 +1,26 @@
 #include "AI_Monster/MonsterAIController.h"
-#include "NavigationSystem.h" //³×ºñ°ÔÀÌ¼Ç ±â´ÉÀ» È°¿ëÇÏ±â À§ÇØ¼­ ÇÊ¿äÇÏ´Ù
+#include "NavigationSystem.h" //ë„¤ë¹„ê²Œì´ì…˜ ê¸°ëŠ¥ì„ í™œìš©í•˜ê¸° ìœ„í•´ì„œ í•„ìš”í•˜ë‹¤
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "AI_Monster/AIMonsterCharacter.h"
 
 
 AMonsterAIController::AMonsterAIController()
 {
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-	//SetPerceptionComponent(*AIPerception); //ÀÌ ±â´ÉÀº ÄÁÆ®·Ñ·¯¿¡¼­´Â ÇÊ¿äÇÑ ±â´É ÇÏÁö¸¸ Ä³¸¯ÅÍ¿¡´Â ÇÊ¿ä°¡ ¾øÀ½
+	//SetPerceptionComponent(*AIPerception); //ì´ ê¸°ëŠ¥ì€ ì»¨íŠ¸ë¡¤ëŸ¬ì—ì„œëŠ” í•„ìš”í•œ ê¸°ëŠ¥ í•˜ì§€ë§Œ ìºë¦­í„°ì—ëŠ” í•„ìš”ê°€ ì—†ìŒ
 
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 1500.0f; //°¨Áö ÇÏ´Â ½Ã¾ß °Å¸®
-	SightConfig->LoseSightRadius = 2000.0f; // °¨Áö ´ë»óÀ» ³õÄ¡´Â °Å¸®
-	SightConfig->PeripheralVisionAngleDegrees = 90.0f; //°¨Áö °¢µµ ¹üÀ§
-	SightConfig->SetMaxAge(5.0f); //°¨Áö ÇÏ°í ±î¸Ô´Â ½Ã°£ ÃÊ
+	SightConfig->SightRadius = 1500.0f; //ê°ì§€ í•˜ëŠ” ì‹œì•¼ ê±°ë¦¬
+	SightConfig->LoseSightRadius = 2000.0f; // ê°ì§€ ëŒ€ìƒì„ ë†“ì¹˜ëŠ” ê±°ë¦¬
+	SightConfig->PeripheralVisionAngleDegrees = 90.0f; //ê°ì§€ ê°ë„ ë²”ìœ„
+	SightConfig->SetMaxAge(5.0f); //ê°ì§€ í•˜ê³  ê¹Œë¨¹ëŠ” ì‹œê°„ ì´ˆ
 
-	SightConfig->DetectionByAffiliation.bDetectEnemies = true; //Àû ÀÎ½Ä
-	SightConfig->DetectionByAffiliation.bDetectFriendlies = true; // ÆÀ¿ø ÀÎ½Ä
-	SightConfig->DetectionByAffiliation.bDetectNeutrals = true; // Áß¸³ ÀÎ½Ä
+	SightConfig->DetectionByAffiliation.bDetectEnemies = true; //ì  ì¸ì‹
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = true; // íŒ€ì› ì¸ì‹
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = true; // ì¤‘ë¦½ ì¸ì‹
 
 	AIPerception->ConfigureSense(*SightConfig);
 	AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
@@ -38,7 +39,7 @@ void AMonsterAIController::BeginPlay()
 		);
 	}
 
-	GetWorldTimerManager().SetTimer(RandomMoveTimer, this, &AMonsterAIController::MoveTorRandomLocation, 3.0f, true, 1.0f);//this <- AIÄÁÆ®·Ñ·¯ ÀÚ±â ÀÚ½Å
+	GetWorldTimerManager().SetTimer(RandomMoveTimer, this, &AMonsterAIController::MoveTorRandomLocation, 3.0f, true, 1.0f);//this <- AIì»¨íŠ¸ë¡¤ëŸ¬ ìê¸° ìì‹ 
 }
 
 void AMonsterAIController::OnPossess(APawn* InPawn)
@@ -69,9 +70,9 @@ void AMonsterAIController::MoveTorRandomLocation()
 
 	bool bFouindLocation = NavSystem->GetRandomReachablePointInRadius
 	(
-		MyPawn->GetActorLocation(), //ÇöÁ¦ Ä³¸¯ÅÍ À§Ä¡
-		MoveRadius, //È°µ¿ ¹İ°æ
-		RandomLocation //°è»êµÈ °á°ú °ªÀ» ÀúÀåÇÏ´Â °÷
+		MyPawn->GetActorLocation(), //í˜„ì œ ìºë¦­í„° ìœ„ì¹˜
+		MoveRadius, //í™œë™ ë°˜ê²½
+		RandomLocation //ê³„ì‚°ëœ ê²°ê³¼ ê°’ì„ ì €ì¥í•˜ëŠ” ê³³
 	);
 
 	if (bFouindLocation)
@@ -97,11 +98,11 @@ void AMonsterAIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimul
 
 	if (Stimulus.WasSuccessfullySensed())
 	{
-		StartChasing(Actor); //ÇÃ·¹ÀÌ¾î Ãß°İÇÏ±â
+		StartChasing(Actor); //í”Œë ˆì´ì–´ ì¶”ê²©í•˜ê¸°
 	}
 	else
 	{
-		StopChasing(); //ÇÃ·¹ÀÌ¾î Ãß°İ ¾ÈÇÏ°í ¹èÈ¸ÇÏ±â
+		StopChasing(); //í”Œë ˆì´ì–´ ì¶”ê²© ì•ˆí•˜ê³  ë°°íšŒí•˜ê¸°
 	}
 }
 
@@ -114,14 +115,49 @@ void AMonsterAIController::StartChasing(AActor* Target)
 
 	GetWorldTimerManager().ClearTimer(RandomMoveTimer);
 
-	//if(AAIMonsterCharacter* )
+	if (AAIMonsterCharacter* EnemyChar = Cast<AAIMonsterCharacter>(GetPawn()))
+	{
+		EnemyChar->SetMovemonetSpeed(EnemyChar->RunSpeed);
+	}
+	UpdateChase();
+
+	GetWorldTimerManager().SetTimer
+	(
+		ChaseTimer,
+		this,
+		&AMonsterAIController::UpdateChase,
+		0.25f,
+		true
+	);
 
 }
 void AMonsterAIController::StopChasing()
 {
+	if (!bIsChasing) return;
+	CurrentTarget = nullptr;
+	bIsChasing = false;
+	GetWorldTimerManager().ClearTimer(ChaseTimer);
+	StopMovement();
 
+	if (AAIMonsterCharacter* EnemyChar = Cast<AAIMonsterCharacter>(GetPawn()))
+	{
+		EnemyChar->SetMovemonetSpeed(EnemyChar->WalkSpeed);
+	}
+
+	GetWorldTimerManager().SetTimer
+	(
+		ChaseTimer,
+		this,
+		&AMonsterAIController::MoveTorRandomLocation,
+		3.0f,
+		true,
+		2.0f
+	);
 }
 void AMonsterAIController::UpdateChase() 
 {
-
+	if (CurrentTarget && bIsChasing)
+	{
+		MoveToActor(CurrentTarget, 100.0f);
+	}
 }
