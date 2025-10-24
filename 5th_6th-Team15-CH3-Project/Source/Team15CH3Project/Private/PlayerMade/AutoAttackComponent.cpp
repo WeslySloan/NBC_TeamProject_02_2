@@ -150,4 +150,4 @@ void UAutoAttackComponent::FireProjectile()
             UE_LOG(LogTemp, Warning, TEXT("Fired Projectile with Damage: %f"), StatsComponent->AttackDamage);
         }
     }
-}.
+}
