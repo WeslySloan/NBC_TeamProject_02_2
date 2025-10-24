@@ -30,7 +30,7 @@ APlayerCharacter::APlayerCharacter()
 
     // === 2. 이동 및 회전 설정 ===
     bUseControllerRotationYaw = false;
-    GetCharacterMovement()->bOrientRotationToMovement = false;
+    GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.0f, 0.0f);
 }
 
@@ -79,19 +79,37 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
     if (Controller != nullptr)
     {
         // 카메라의 Yaw 회전을 기준으로 방향을 계산 (탑다운 시점 이동)
-        const FRotator Rotation = CameraBoom->GetComponentRotation();
+        // const FRotator Rotation = CameraBoom->GetComponentRotation();
+        /*const FRotator Rotation = Controller->GetControlRotation();
+        const FRotator YawRotation(0, Rotation.Yaw, 0);*/
+
+        const FRotator Rotation = Controller->GetControlRotation();
         const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-        if (!FMath::IsNearlyZero(MovementVector.Y))
+        const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        AddMovementInput(ForwardDirection, MovementVector.Y);
+        AddMovementInput(RightDirection, MovementVector.X);
+
+        if (!MovementVector.IsNearlyZero())
         {
-            const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-            AddMovementInput(ForwardDirection, MovementVector.Y);
+            const FVector MoveDir = (ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X).GetSafeNormal();
+            SetActorRotation(MoveDir.Rotation());
         }
 
-        if (!FMath::IsNearlyZero(MovementVector.X))
-        {
-            const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-            AddMovementInput(RightDirection, MovementVector.X);
-        }
+
+        //if (!FMath::IsNearlyZero(MovementVector.Y))
+        //{
+        //    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        //    AddMovementInput(ForwardDirection, MovementVector.Y);
+        //    /*FRotator(0.0f, 0.0f, 0.0f);*/
+        //}
+
+        //if (!FMath::IsNearlyZero(MovementVector.X))
+        //{
+        //    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+        //    AddMovementInput(RightDirection, MovementVector.X);
+        //}
     }
 }

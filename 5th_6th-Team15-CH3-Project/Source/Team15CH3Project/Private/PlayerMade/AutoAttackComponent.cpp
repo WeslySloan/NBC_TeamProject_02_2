@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
+#include "PlayerMade/Projectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 UAutoAttackComponent::UAutoAttackComponent()
 {
@@ -20,9 +22,11 @@ void UAutoAttackComponent::BeginPlay()
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn)
     {
+        // Owner에서 StatsComponent를 찾습니다.
         StatsComponent = OwnerPawn->FindComponentByClass<UCharacterStatsComponent>();
     }
 
+    // 공격 속도에 따라 자동 공격 타이머 시작
     if (StatsComponent && ProjectileClass)
     {
         StartAutoAttack();
@@ -42,7 +46,7 @@ void UAutoAttackComponent::StartAutoAttack()
         this,
         &UAutoAttackComponent::FireProjectile,
         AttackInterval,
-        true
+        true // 반복 설정
     );
 }
 
@@ -50,6 +54,7 @@ float UAutoAttackComponent::CalculateAttackInterval() const
 {
     if (StatsComponent && StatsComponent->AttackSpeed > 0)
     {
+        // 공격 속도(AttackSpeed)는 초당 공격 횟수 // 주기는 1 / AttackSpeed 
         return 1.0f / StatsComponent->AttackSpeed;
     }
     return 1.0f;
@@ -70,6 +75,7 @@ APawn* UAutoAttackComponent::FindTarget() const
 
     if (OverlappingActors.Num() > 0)
     {
+        // 몬스터 중 가장 가까운 타겟을 찾는 로직...
         APawn* BestTarget = nullptr;
         float ClosestDistSq = FMath::Square(AttackRange);
 
@@ -114,13 +120,11 @@ void UAutoAttackComponent::FireProjectile()
     UWorld* World = GetWorld();
     if (!World) return;
 
-    // 몬스터 감지
     APawn* Target = FindTarget();
 
-    // 타겟에 따라 발사 방향 결정
     FRotator BaseRotation = GetFireRotation(Target);
 
-    int32 Count = StatsComponent->ProjectileCount; // 탄 발사량 반영
+    int32 Count = StatsComponent->ProjectileCount;
 
     FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(0, 0, 50.0f);
 
@@ -140,14 +144,23 @@ void UAutoAttackComponent::FireProjectile()
 
         FActorSpawnParameters Params;
         Params.Owner = GetOwner();
+        Params.Instigator = GetOwner()->GetInstigator();
 
         // 투사체 생성
-        AActor* NewProjectile = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, FinalRotation, Params);
+        AActor* NewActor = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, FinalRotation, Params);
 
-        // 데미지 이벤트 (임시)
-        if (NewProjectile)
+        if (AProjectile* Projectile = Cast<AProjectile>(NewActor))
         {
-            UE_LOG(LogTemp, Warning, TEXT("Fired Projectile with Damage: %f"), StatsComponent->AttackDamage);
+            if (Projectile->ProjectileMovement)
+            {
+                Projectile->ProjectileMovement->Velocity = FinalRotation.Vector() * Projectile->ProjectileMovement->InitialSpeed;
+            }
+            Projectile->InitializeProjectile(StatsComponent->AttackDamage);
+        }
+        else
+        {
+            // ProjectileClass에 AProjectile이 아닌 다른 Actor BP가 할당된 경우 대비
+            UE_LOG(LogTemp, Warning, TEXT("Spawned Projectile is not of type AProjectile. Damage value not set."));
         }
     }
 }
