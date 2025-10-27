@@ -22,11 +22,9 @@ void UAutoAttackComponent::BeginPlay()
     APawn* OwnerPawn = Cast<APawn>(GetOwner());
     if (OwnerPawn)
     {
-        // Owner에서 StatsComponent를 찾습니다.
         StatsComponent = OwnerPawn->FindComponentByClass<UCharacterStatsComponent>();
     }
 
-    // 공격 속도에 따라 자동 공격 타이머 시작
     if (StatsComponent && ProjectileClass)
     {
         StartAutoAttack();
@@ -46,7 +44,7 @@ void UAutoAttackComponent::StartAutoAttack()
         this,
         &UAutoAttackComponent::FireProjectile,
         AttackInterval,
-        true // 반복 설정
+        true
     );
 }
 
@@ -54,7 +52,6 @@ float UAutoAttackComponent::CalculateAttackInterval() const
 {
     if (StatsComponent && StatsComponent->AttackSpeed > 0)
     {
-        // 공격 속도(AttackSpeed)는 초당 공격 횟수 // 주기는 1 / AttackSpeed 
         return 1.0f / StatsComponent->AttackSpeed;
     }
     return 1.0f;
@@ -75,7 +72,6 @@ APawn* UAutoAttackComponent::FindTarget() const
 
     if (OverlappingActors.Num() > 0)
     {
-        // 몬스터 중 가장 가까운 타겟을 찾는 로직...
         APawn* BestTarget = nullptr;
         float ClosestDistSq = FMath::Square(AttackRange);
 
@@ -121,16 +117,13 @@ void UAutoAttackComponent::FireProjectile()
     if (!World) return;
 
     APawn* Target = FindTarget();
-
     FRotator BaseRotation = GetFireRotation(Target);
+    int32 Count = StatsComponent->ProjectileCount; // 1. 스탯에서 Count를 가져옵니다.
+    FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(0, 0, 50.0f);
 
-    int32 Count = StatsComponent->ProjectileCount;
-
-    FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(50.0f, 0, 50.0f);
-
-    // ProjectileCount에 따른 발사 각도 계산
-    float SpreadAngle = 10.0f;
-    float HalfAngle = SpreadAngle * (Count - 1) / 2.0f;
+    // 2. 여러 발 발사를 위한 각도 계산
+    float SpreadAngle = 10.0f; // 총알 사이의 각도 (10도)
+    float HalfAngle = SpreadAngle * (Count - 1) / 2.0f; // 전체 각도의 절반
 
     for (int32 i = 0; i < Count; ++i)
     {
@@ -146,6 +139,8 @@ void UAutoAttackComponent::FireProjectile()
         Params.Owner = GetOwner();
         Params.Instigator = GetOwner()->GetInstigator();
 
+        Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // 최초생성 충돌 방지용
+
         // 투사체 생성
         AActor* NewActor = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, FinalRotation, Params);
 
@@ -156,12 +151,10 @@ void UAutoAttackComponent::FireProjectile()
                 Projectile->ProjectileMovement->Velocity = FinalRotation.Vector() * Projectile->ProjectileMovement->InitialSpeed;
             }
             Projectile->InitializeProjectile(StatsComponent->AttackDamage);
-
             UE_LOG(LogTemp, Warning, TEXT("Projectile on Spawn test"));
         }
         else
         {
-            // ProjectileClass에 AProjectile이 아닌 다른 Actor BP가 할당된 경우 대비
             UE_LOG(LogTemp, Warning, TEXT("Spawned Projectile is not of type AProjectile. Damage value not set."));
         }
     }
