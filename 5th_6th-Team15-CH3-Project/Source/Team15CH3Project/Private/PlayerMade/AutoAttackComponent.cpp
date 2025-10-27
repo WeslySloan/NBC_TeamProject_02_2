@@ -126,7 +126,7 @@ void UAutoAttackComponent::FireProjectile()
 
     int32 Count = StatsComponent->ProjectileCount;
 
-    FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(0, 0, 50.0f);
+    FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(50.0f, 0, 50.0f);
 
     // ProjectileCount에 따른 발사 각도 계산
     float SpreadAngle = 10.0f;
@@ -156,6 +156,8 @@ void UAutoAttackComponent::FireProjectile()
                 Projectile->ProjectileMovement->Velocity = FinalRotation.Vector() * Projectile->ProjectileMovement->InitialSpeed;
             }
             Projectile->InitializeProjectile(StatsComponent->AttackDamage);
+
+            UE_LOG(LogTemp, Warning, TEXT("Projectile on Spawn test"));
         }
         else
         {

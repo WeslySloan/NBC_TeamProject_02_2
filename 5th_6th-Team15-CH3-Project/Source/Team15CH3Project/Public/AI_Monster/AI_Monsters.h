@@ -1,10 +1,11 @@
- #pragma once
+#pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Character.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "MonsterAIController.generated.h"
+#include "AI_Monsters.generated.h"
 
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
@@ -12,19 +13,19 @@ class UBIackboardComponent;
 class UCapsuleComponent;
 
 UCLASS()
-class TEAM15CH3PROJECT_API AMonsterAIController : public AAIController
+class TEAM15CH3PROJECT_API AAI_Monsters : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	AMonsterAIController();
+
+	AAI_Monsters();
 	void StartBehaviorTree();
 	FORCEINLINE UBlackboardComponent* GetBlackboardComp() const;
 
 
 protected:
 
-	//virtual void OnPossess(APawn* InPawn) override; //OnPossess 1순위 호출 2순위 BeginPlay
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
@@ -45,8 +46,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UBehaviorTree* BehaviorTreeAsset;
 
-	UFUNCTION()
-	void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
+private:
+	void SetMovemonetSpeed(float NewSpeed);
+
+	UPROPERTY(EditAnyWhere, Category = "AI")
+	float WalkSpeed = 500.0f; //기본속도가 600으로 설정
+
+	UPROPERTY(EditAnyWhere, Category = "AI")
+	float RunSpeed = 700.0f;
 
 };

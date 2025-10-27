@@ -1,22 +1,19 @@
+#include "AI_Monster/AI_MonsterController.h"
+#include "AI_Monster/AIMonsterCharacter.h"
 #include "AI_Monster/MonsterAIController.h"
-#include "NavigationSystem.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "AI_Monster/AIMonsterCharacter.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/CapsuleComponent.h"
 
-AMonsterAIController::AMonsterAIController()
+AAI_MonsterController::AAI_MonsterController()
 {
-
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
 
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 1500.0f;
-	SightConfig->LoseSightRadius = 2000.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 90.0f;
+	SightConfig->SightRadius = 2000.0f;
+	SightConfig->LoseSightRadius = 2400.0f;
+	SightConfig->PeripheralVisionAngleDegrees = 359.0f;
 	SightConfig->SetMaxAge(5.0f);
 
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
@@ -27,46 +24,40 @@ AMonsterAIController::AMonsterAIController()
 	AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
 
 	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoard"));
+
 }
 
-void AMonsterAIController::BeginPlay()
+void AAI_MonsterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (BlackboardComp)
-	{
-		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), false);
-		BlackboardComp->SetValueAsBool(TEXT("IsInvestigating"), false);
-
-		StartBehaviorTree();
-	}
-	else
-	{
-
-	}
-
 	if (AIPerception)
 	{
-		AIPerception->OnTargetPerceptionUpdated.AddDynamic(
-			this,
-			&AMonsterAIController::OnPerceptionUpdated
-		);
+		AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_MonsterController::OnPerceptionUpdated);
+	
 	}
 
+	StartBehaviorTree();
+
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (PlayerPawn && BlackboardComp)
+	{
+		BlackboardComp->SetValueAsObject(TEXT("TargetActor"), PlayerPawn);
+		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), true);
+	}
 }
 
-//void AMonsterAIController::OnPossess(APawn* InPawn)
-//{
-//	Super::OnPossess(InPawn);
-//
-//	if (InPawn)
-//	{
-//		UE_LOG(LogTemp, Warning, TEXT("[Monster] AI Controller is controlling %s."), *InPawn->GetName());
-//	}
-//}
+void AAI_MonsterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
 
+	if (InPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[Monster] AI Controller is controlling %s."), *InPawn->GetName());
+	}
+}
 
-void AMonsterAIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void AAI_MonsterController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
@@ -80,24 +71,25 @@ void AMonsterAIController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimul
 		return;
 	}
 
-	if (Stimulus.WasSuccessfullySensed())
+	/*if (Stimulus.WasSuccessfullySensed())
 	{
 		BlackboardComp->SetValueAsObject(TEXT("TargetActor"), Actor);
 		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), true);
 		BlackboardComp->SetValueAsBool(TEXT("IsInvestigating"), false);
+
 	}
 	else
 	{
-		
-	}
+		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), false);
+	}*/
 }
 
-UBlackboardComponent* AMonsterAIController::GetBlackboardComp() const
+UBlackboardComponent* AAI_MonsterController::GetBlackboardComp() const
 {
-	return BlackboardComp; 
+	return BlackboardComp;
 }
 
-void AMonsterAIController::StartBehaviorTree()
+void AAI_MonsterController::StartBehaviorTree()
 {
 	if (BehaviorTreeAsset)
 	{
