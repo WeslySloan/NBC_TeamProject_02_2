@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// PlayerCharacter.cpp
 
 #include "PlayerMade/PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -8,8 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
-#include "PlayerMade/CharacterStatsComponent.h" // 💡 [수정됨] Stats Component 헤더 추가
-#include "Components/CapsuleComponent.h" // 💡 [수정됨] 사망 시 충돌 비활성화를 위해 추가
+#include "PlayerMade/CharacterStatsComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -30,7 +29,6 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
-	// 💡 [수정됨] CharacterStatsComponent 생성 및 부착
 	StatsComponent = CreateDefaultSubobject<UCharacterStatsComponent>(TEXT("StatsComponent"));
 
 	// === 2. 이동 및 회전 설정 ===
@@ -119,7 +117,6 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-// 💡 [수정됨] 데미지 처리를 StatsComponent에 위임
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (!StatsComponent)
@@ -139,7 +136,6 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return ActualDamage;
 }
 
-// 💡 [수정됨] PlayerIsDead는 이제 캐릭터의 물리적 비활성화만 담당
 void APlayerCharacter::PlayerIsDead()
 {
 	UE_LOG(LogTemp, Error, TEXT("PLAYER IS DEAD! Deactivating input and collision."));

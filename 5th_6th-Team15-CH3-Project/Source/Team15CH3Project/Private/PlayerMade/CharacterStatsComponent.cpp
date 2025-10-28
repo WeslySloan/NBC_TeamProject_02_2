@@ -9,6 +9,7 @@ UCharacterStatsComponent::UCharacterStatsComponent()
     PrimaryComponentTick.bCanEverTick = false;
 }
 
+// 데미지 처리 함수
 float UCharacterStatsComponent::TakeDamage(float DamageAmount)
 {
     if (IsDead())
@@ -30,7 +31,7 @@ float UCharacterStatsComponent::TakeDamage(float DamageAmount)
     return DamageAmount;
 }
 
-// 사망 처리 함수 
+// 사망 처리 함수
 void UCharacterStatsComponent::Die()
 {
     UE_LOG(LogTemp, Error, TEXT("[Stats] Character has DIED! Notifying UI/AI."));

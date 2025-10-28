@@ -150,8 +150,6 @@ void UAutoAttackComponent::FireProjectile()
             {
                 Projectile->ProjectileMovement->Velocity = FinalRotation.Vector() * Projectile->ProjectileMovement->InitialSpeed;
             }
-
-            /*StatsComponent->AttackDamage = FMath::FRandRange(AttackDamagemin, attackDamageMAx);*/// 이거 추가하면 CharComp 에서 AttackDamage 0으로 초기화할것. 공격력은 여기서 난수초기화 해야함 // 기본공격 투사체 공격력 난수화 
             Projectile->InitializeProjectile(StatsComponent->AttackDamage);
             UE_LOG(LogTemp, Warning, TEXT("Projectile on Spawn test"));
         }
