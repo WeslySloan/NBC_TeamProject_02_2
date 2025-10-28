@@ -7,9 +7,6 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "AI_Monsters.generated.h"
 
-class UAIPerceptionComponent;
-class UAISenseConfig_Sight;
-class UBIackboardComponent;
 class UCapsuleComponent;
 
 UCLASS()
@@ -20,8 +17,16 @@ class TEAM15CH3PROJECT_API AAI_Monsters : public ACharacter
 public:
 
 	AAI_Monsters();
-	void StartBehaviorTree();
-	FORCEINLINE UBlackboardComponent* GetBlackboardComp() const;
+
+	bool CanAttack(APawn* Target) const;     
+	void PerformAttack(APawn* Target);       
+	bool IsDead() const { return CurrentHP <= 0.f; } 
+
+	UPROPERTY(EditAnyWhere, Category = "AI")
+	float WalkSpeed = 400.0f; // AI 몬스터 속도값을 정해주는 기능.
+
+	UPROPERTY(EditAnyWhere, Category = "AI")
+	float RunSpeed = 500.0f;
 
 
 protected:
@@ -29,31 +34,32 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-	UAIPerceptionComponent* AIPerception;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	UCapsuleComponent* CapsuleComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-	UAISenseConfig_Sight* SightConfig;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
-	UBlackboardComponent* BlackboardComp;
 
 	UPROPERTY()
 	AActor* CurrentTarget = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UBehaviorTree* BehaviorTreeAsset;
-
-
 private:
-	void SetMovemonetSpeed(float NewSpeed);
 
-	UPROPERTY(EditAnyWhere, Category = "AI")
-	float WalkSpeed = 500.0f; //기본속도가 600으로 설정
+	UPROPERTY(EditAnywhere, Category = "Combat") float AttackCooldown; 
+	UPROPERTY(EditAnywhere, Category = "Combat") float AttackDamage; 
+	UPROPERTY(EditAnywhere, Category = "Combat") float AttackRange; 
+	UPROPERTY(EditAnywhere, Category = "Combat") float MaxHP;  
+	UPROPERTY(VisibleAnywhere, Category = "Combat") float CurrentHP;  
 
-	UPROPERTY(EditAnyWhere, Category = "AI")
-	float RunSpeed = 700.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Combat")
+	class UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Combat")
+	class USoundBase* AttackSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI|Combat")
+	class UParticleSystem* HitEffect;
+
+	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	float LastAttackTime = -1000.f;          
+
+	void SetMovementSpeed(float NewSpeed);
 
 };

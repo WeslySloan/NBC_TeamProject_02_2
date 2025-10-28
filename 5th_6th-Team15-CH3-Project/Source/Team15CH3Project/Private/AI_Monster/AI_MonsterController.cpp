@@ -5,46 +5,19 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "TimerManager.h"
+#include "AI_Monster/AI_Monsters.h"
 
 AAI_MonsterController::AAI_MonsterController()
 {
-	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 2000.0f;
-	SightConfig->LoseSightRadius = 2400.0f;
-	SightConfig->PeripheralVisionAngleDegrees = 359.0f;
-	SightConfig->SetMaxAge(5.0f);
-
-	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
-	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
-	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
-
-	AIPerception->ConfigureSense(*SightConfig);
-	AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
-
-	BlackboardComp = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackBoard"));
 
 }
 
 void AAI_MonsterController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AIPerception)
-	{
-		AIPerception->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_MonsterController::OnPerceptionUpdated);
-	
-	}
-
-	StartBehaviorTree();
-
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (PlayerPawn && BlackboardComp)
-	{
-		BlackboardComp->SetValueAsObject(TEXT("TargetActor"), PlayerPawn);
-		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), true);
-	}
+	PlayerPawnCached = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	//StartChaseLoop();
 }
 
 void AAI_MonsterController::OnPossess(APawn* InPawn)
@@ -57,47 +30,53 @@ void AAI_MonsterController::OnPossess(APawn* InPawn)
 	}
 }
 
-void AAI_MonsterController::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+void AAI_MonsterController::StartChaseLoop()                  
 {
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
-	if (Actor != PlayerPawn)
+	UE_LOG(LogTemp, Warning, TEXT("[RUN] AI Controller is controlling"));
+	MoveToActor(PlayerPawnCached, 120.f, true);
+	UE_LOG(LogTemp, Warning, TEXT("[PlayerPawnCash] %s"), *(PlayerPawnCached->GetName()));//AcceptanceRadius= 120¹ÌÅÍ  bStopOnOverlap=°¡ true
+	if (!GetWorldTimerManager().IsTimerActive(ChaseTimerHandle)) 
 	{
-		return;
-	}
-
-	if (!BlackboardComp)
-	{
-		return;
-	}
-
-	/*if (Stimulus.WasSuccessfullySensed())
-	{
-		BlackboardComp->SetValueAsObject(TEXT("TargetActor"), Actor);
-		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), true);
-		BlackboardComp->SetValueAsBool(TEXT("IsInvestigating"), false);
+		GetWorldTimerManager().SetTimer(                       
+			ChaseTimerHandle, this, &AAI_MonsterController::UpdateChaseLoop,
+			 0.5f ,true);
 
 	}
-	else
+	
+}                                                              
+
+void AAI_MonsterController::UpdateChaseLoop()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[UPDateLoop] AI Controller is controlling"));
+	APawn* SelfPawn = GetPawn();
+	if (!SelfPawn || !PlayerPawnCached) { return; }
+
+	/*if (const AAI_Monsters* M = Cast<AAI_Monsters>(SelfPawn))
 	{
-		BlackboardComp->SetValueAsBool(TEXT("CanSeeTarget"), false);
+		if (M->IsDead())
+		{
+			StopMovement();
+			GetWorldTimerManager().ClearTimer(ChaseTimerHandle);
+			return;
+		}
 	}*/
-}
 
-UBlackboardComponent* AAI_MonsterController::GetBlackboardComp() const
-{
-	return BlackboardComp;
-}
+	const float Dist2D = FVector::Dist2D(SelfPawn->GetActorLocation(), PlayerPawnCached->GetActorLocation());
 
-void AAI_MonsterController::StartBehaviorTree()
-{
-	if (BehaviorTreeAsset)
+
+	if (Dist2D <= AttackRange)
 	{
-		RunBehaviorTree(BehaviorTreeAsset);
-		UE_LOG(LogTemp, Warning, TEXT("[Sparta] Behavior Tree started"));
+		StopMovement();
+		if (AAI_Monsters* M = Cast<AAI_Monsters>(SelfPawn))
+		{
+			if (M->CanAttack(PlayerPawnCached))
+			{
+				M->PerformAttack(PlayerPawnCached);
+			}
+		}
+		return;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("[Sparta] Behavior Tree Asset not set!"));
-	}
+
+
+	MoveToActor(PlayerPawnCached, 120.f, true);
 }
