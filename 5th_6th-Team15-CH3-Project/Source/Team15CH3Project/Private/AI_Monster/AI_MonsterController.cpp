@@ -32,9 +32,9 @@ void AAI_MonsterController::OnPossess(APawn* InPawn)
 
 void AAI_MonsterController::StartChaseLoop()                  
 {
-	UE_LOG(LogTemp, Warning, TEXT("[RUN] AI Controller is controlling"));
+	//UE_LOG(LogTemp, Warning, TEXT("[RUN] AI Controller is controlling"));
 	MoveToActor(PlayerPawnCached, 120.f, true);
-	UE_LOG(LogTemp, Warning, TEXT("[PlayerPawnCash] %s"), *(PlayerPawnCached->GetName()));//AcceptanceRadius= 120미터  bStopOnOverlap=가 true
+	//UE_LOG(LogTemp, Warning, TEXT("[PlayerPawnCash] %s"), *(PlayerPawnCached->GetName()));//AcceptanceRadius= 120미터  bStopOnOverlap=가 true
 	if (!GetWorldTimerManager().IsTimerActive(ChaseTimerHandle)) 
 	{
 		GetWorldTimerManager().SetTimer(                       
@@ -47,11 +47,11 @@ void AAI_MonsterController::StartChaseLoop()
 
 void AAI_MonsterController::UpdateChaseLoop()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[UPDateLoop] AI Controller is controlling"));
+	//UE_LOG(LogTemp, Warning, TEXT("[UPDateLoop] AI Controller is controlling"));
 	APawn* SelfPawn = GetPawn();
 	if (!SelfPawn || !PlayerPawnCached) { return; }
 
-	/*if (const AAI_Monsters* M = Cast<AAI_Monsters>(SelfPawn))
+	if (const AAI_Monsters* M = Cast<AAI_Monsters>(SelfPawn))
 	{
 		if (M->IsDead())
 		{
@@ -59,24 +59,26 @@ void AAI_MonsterController::UpdateChaseLoop()
 			GetWorldTimerManager().ClearTimer(ChaseTimerHandle);
 			return;
 		}
-	}*/
+	}
 
 	const float Dist2D = FVector::Dist2D(SelfPawn->GetActorLocation(), PlayerPawnCached->GetActorLocation());
 
 
 	if (Dist2D <= AttackRange)
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("[Do Not Move]"));
 		StopMovement();
 		if (AAI_Monsters* M = Cast<AAI_Monsters>(SelfPawn))
 		{
 			if (M->CanAttack(PlayerPawnCached))
 			{
+				
+			}//UE_LOG(LogTemp, Warning, TEXT("[Do Attack]"));
 				M->PerformAttack(PlayerPawnCached);
-			}
 		}
 		return;
 	}
 
 
-	MoveToActor(PlayerPawnCached, 120.f, true);
+	MoveToActor(PlayerPawnCached, 80.f, true);
 }

@@ -38,7 +38,7 @@ private:
 
 	FTimerHandle ChaseTimerHandle;                                   
 	UPROPERTY(EditAnywhere, Category = "Chase") float MoveUpdateInterval = 0.25f; 
-	UPROPERTY(EditAnywhere, Category = "Combat") float AttackRange = 150.f;       
+	UPROPERTY(EditAnywhere, Category = "Combat") float AttackRange = 180.f;
 	UPROPERTY() APawn* PlayerPawnCached = nullptr;                               
 
 	                                        

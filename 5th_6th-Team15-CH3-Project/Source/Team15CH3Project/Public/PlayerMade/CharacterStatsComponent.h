@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,15 +14,13 @@ class TEAM15CH3PROJECT_API UCharacterStatsComponent : public UActorComponent
 public:
 	UCharacterStatsComponent();
 
-	// µ¥¹ÌÁö Ã³¸® ÇÔ¼ö ¼±¾ð
 	float TakeDamage(float DamageAmount);
 
-	// Ä³¸¯ÅÍ »ç¸Á »óÅÂ Getter ÇÔ¼ö
 	UFUNCTION(BlueprintPure, Category = "Stats | Resources")
 	bool IsDead() const { return CurrentHP <= 0.0f; }
 
 protected:
-	// »ç¸Á ½Ã È£ÃâµÇ´Â ³»ºÎ ÇÔ¼ö
+	// ì‚¬ë§ ì‹œ í˜¸ì¶œë˜ëŠ” ë‚´ë¶€ í•¨ìˆ˜
 	void Die();
 
 public:

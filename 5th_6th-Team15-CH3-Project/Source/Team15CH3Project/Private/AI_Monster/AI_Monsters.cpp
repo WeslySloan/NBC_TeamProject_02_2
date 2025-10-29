@@ -3,6 +3,7 @@
 #include "AI_Monster/AI_MonsterController.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Controller.h"
+#include "PlayerMade/PlayerCharacter.h"
 
 
 AAI_Monsters::AAI_Monsters()
@@ -13,11 +14,14 @@ AAI_Monsters::AAI_Monsters()
 	Movement->bOrientRotationToMovement = true; //키면 캐릭터가 움직이는 방향으로 바라보고 끄면 미끌어 지듯이 바라본다
 	Movement->RotationRate = FRotator(0.0f, 540.0f, 0.0f); //돌아 보는 회전 속도 높으면 갑자기 확 돌아본다
 	Movement->MaxWalkSpeed = WalkSpeed;
+	
+	MaxHP = 300.0f;
 	CurrentHP = MaxHP;
 
-	AttackRange = 150.f;
+	AttackRange = 180.f;
 	AttackCooldown = 1.5f;
 	AttackDamage = 15.f;
+	LastAttackTime = -1000.0f;
 }
 
 
@@ -25,7 +29,7 @@ void AAI_Monsters::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UE_LOG(LogTemp, Warning, TEXT("[Monster] AI Character has been spawned."));
+	//UE_LOG(LogTemp, Warning, TEXT("[Monster] AI Character has been spawned."));
 
 	SetMovementSpeed(WalkSpeed);
 	AAI_MonsterController* MonsterController = Cast< AAI_MonsterController>(GetController());
@@ -47,6 +51,7 @@ bool AAI_Monsters::CanAttack(APawn* Target) const
 	if (Now - LastAttackTime < AttackCooldown) return false;
 	const float Dist = FVector::Dist2D(GetActorLocation(), Target->GetActorLocation());
 	return Dist <= AttackRange;
+	//UE_LOG(LogTemp, Warning, TEXT("[Attack!!]"));
 }
 
 void AAI_Monsters::PerformAttack(APawn* Target)

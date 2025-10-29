@@ -18,8 +18,8 @@ public:
 
 	AAI_Monsters();
 
-	bool CanAttack(APawn* Target) const;     
-	void PerformAttack(APawn* Target);       
+	bool CanAttack(APawn* Target) const;
+	void PerformAttack(APawn* Target);
 	bool IsDead() const { return CurrentHP <= 0.f; } 
 
 	UPROPERTY(EditAnyWhere, Category = "AI")
@@ -27,6 +27,7 @@ public:
 
 	UPROPERTY(EditAnyWhere, Category = "AI")
 	float RunSpeed = 500.0f;
+
 
 
 protected:
@@ -45,7 +46,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat") float AttackDamage; 
 	UPROPERTY(EditAnywhere, Category = "Combat") float AttackRange; 
 	UPROPERTY(EditAnywhere, Category = "Combat") float MaxHP;  
-	UPROPERTY(VisibleAnywhere, Category = "Combat") float CurrentHP;  
+	UPROPERTY(VisibleAnywhere, Category = "Combat") float CurrentHP;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI|Combat")
 	class UAnimMontage* AttackMontage;
@@ -58,8 +59,7 @@ private:
 
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
-	float LastAttackTime = -1000.f;          
+	float LastAttackTime;          
 
 	void SetMovementSpeed(float NewSpeed);
-
 };
