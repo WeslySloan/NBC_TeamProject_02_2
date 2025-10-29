@@ -10,13 +10,13 @@
 AProjectile::AProjectile()
 {
     PrimaryActorTick.bCanEverTick = false;
-    // 5초 후 자동 파괴 (수명 설정)
+
     SetLifeSpan(5.0f);
 
     CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
     RootComponent = CollisionComp;
 
-    CollisionComp->InitSphereRadius(30.0f);
+    CollisionComp->InitSphereRadius(10.0f);
 
     CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
@@ -34,7 +34,18 @@ void AProjectile::BeginPlay()
 {
     Super::BeginPlay();
 
+    /// 추가됨
+    CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    // 스폰 후 잠시 후에 활성화
+    FTimerHandle TimerHandle;
+    GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+        {
+            if (CollisionComp)
+                CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // Overlap 전용 활성화
+        }, 0.05f, false);
     CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
+    /// 
+
 }
 
 // Overlap 이벤트 처리 함수 구현
@@ -43,9 +54,7 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
     // 자신을 발사한 캐릭터(Owner)와 충돌하는 것은 무시
     if (OtherActor && OtherActor != this && OtherActor != GetOwner())
     {
-        // 💡 몬스터에게 데미지 판정
-        // 💡 OtherActor가 AActor를 상속받았는지 확인 (BP_AI_Monsters가 APawn을 상속받았다고 가정)
-        if (OtherActor->IsA(AAI_Monsters::StaticClass())) // 💡 AAI_Monsters 클래스로 변경
+        if (OtherActor->IsA(AAI_Monsters::StaticClass()))
         {
             // 이 조건문을 통과했으므로 몬스터에게 데미지를 적용합니다.
             UE_LOG(LogTemp, Warning, TEXT("Projectile Overlapped Monster: %s. Damage: %f"), *OtherActor->GetName(), Damage);

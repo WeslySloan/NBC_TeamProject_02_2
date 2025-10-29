@@ -131,7 +131,7 @@ void UAutoAttackComponent::FireProjectile()
 
         if (Count > 1)
         {
-            float CurrentAngle = HalfAngle - (i * SpreadAngle);
+            float CurrentAngle = -HalfAngle + (i * SpreadAngle);
             FinalRotation.Yaw += CurrentAngle;
         }
 

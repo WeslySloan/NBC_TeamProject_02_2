@@ -1,4 +1,4 @@
-#include "AI_Monster/AI_Monsters.h"
+ï»¿#include "AI_Monster/AI_Monsters.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AI_Monster/AI_MonsterController.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,8 +11,8 @@ AAI_Monsters::AAI_Monsters()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	AIControllerClass = AAI_MonsterController::StaticClass();
 	UCharacterMovementComponent* Movement = GetCharacterMovement();
-	Movement->bOrientRotationToMovement = true; //Å°¸é Ä³¸¯ÅÍ°¡ ¿òÁ÷ÀÌ´Â ¹æÇâÀ¸·Î ¹Ù¶óº¸°í ²ô¸é ¹Ì²ø¾î ÁöµíÀÌ ¹Ù¶óº»´Ù
-	Movement->RotationRate = FRotator(0.0f, 540.0f, 0.0f); //µ¹¾Æ º¸´Â È¸Àü ¼Óµµ ³ôÀ¸¸é °©ÀÚ±â È® µ¹¾Æº»´Ù
+	Movement->bOrientRotationToMovement = true; //í‚¤ë©´ ìºë¦­í„°ê°€ ì›€ì§ì´ëŠ” ë°©í–¥ìœ¼ë¡œ ë°”ë¼ë³´ê³  ë„ë©´ ë¯¸ëŒì–´ ì§€ë“¯ì´ ë°”ë¼ë³¸ë‹¤
+	Movement->RotationRate = FRotator(0.0f, 540.0f, 0.0f); //ëŒì•„ ë³´ëŠ” íšŒì „ ì†ë„ ë†’ìœ¼ë©´ ê°‘ìžê¸° í™• ëŒì•„ë³¸ë‹¤
 	Movement->MaxWalkSpeed = WalkSpeed;
 	
 	MaxHP = 300.0f;
