@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Skill/Base_item.h"
+#include "Skill/Actor/Drone.h"
 #include "passiveItem.generated.h"
 
 UENUM(BlueprintType)
@@ -43,6 +44,14 @@ struct FPassiveItemData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PassiveSkill")
 	int32 MaxStackCnt;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PassiveSkill")
+	int32 CoolTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PercentStack = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PassiveSkill")
+	TSubclassOf<class ApassiveItem> PassiveItemClass;
 };
 
 UCLASS()
@@ -58,9 +67,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	FPassiveItemData PassiveSkillData;
 
-protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	EPassiveItemType PassiveType;
+
+	UPROPERTY(EditAnywhere, Category = "Drone")
+	TSubclassOf<ADrone> DroneClass;
 };
 
 

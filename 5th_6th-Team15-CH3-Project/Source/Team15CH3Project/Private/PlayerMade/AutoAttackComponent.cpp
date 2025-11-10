@@ -1,6 +1,5 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PlayerMade/AutoAttackComponent.h"
 #include "PlayerMade/PlayerCharacter.h"
 #include "PlayerMade/CharacterStatsComponent.h"
@@ -9,10 +8,11 @@
 #include "TimerManager.h"
 #include "PlayerMade/Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "AI_Monster/AI_Monsters.h"
 
 UAutoAttackComponent::UAutoAttackComponent()
 {
-    PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UAutoAttackComponent::BeginPlay()
@@ -30,6 +30,16 @@ void UAutoAttackComponent::BeginPlay()
         StartAutoAttack();
     }
 }
+
+void UAutoAttackComponent::StopAutoAttack()
+{
+    if (GetWorld())
+    {
+        GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+        UE_LOG(LogTemp, Warning, TEXT("Auto Attack Stopped by PlayerIsDead event."));
+    }
+}
+
 
 // ====================================================================
 // 공격 제어 로직
@@ -81,6 +91,27 @@ APawn* UAutoAttackComponent::FindTarget() const
         {
             if (APawn* Pawn = Cast<APawn>(Actor))
             {
+                // 몬스터가 AAI_Monsters 타입이면 IsDead()로 상태 확인
+                if (AAI_Monsters* Monster = Cast<AAI_Monsters>(Pawn))
+                {
+                    if (Monster->IsDead())
+                    {
+                        continue;
+                    }
+                }
+                //else if (const UCharacterStatsComponent* EnemyStats = Pawn->FindComponentByClass<UCharacterStatsComponent>())
+                //{
+                //    if (EnemyStats->IsDead())
+                //    {
+                //        continue;
+                //    }
+                //}
+
+                if (!Pawn->IsValidLowLevel() || Pawn->IsPendingKillPending())
+                {
+                    continue;
+                }
+
                 float DistSq = FVector::DistSquared(OwnerLocation, Pawn->GetActorLocation());
 
                 if (DistSq <= ClosestDistSq)
@@ -117,11 +148,36 @@ void UAutoAttackComponent::FireProjectile()
     if (!World) return;
 
     APawn* Target = FindTarget();
+
+    if (!Target)
+        return;
+
+    if (!Target->IsValidLowLevel() || Target->IsPendingKillPending())
+        return;
+
+    if (AAI_Monsters* Enemy = Cast<AAI_Monsters>(Target))
+    {
+        if (Enemy->IsDead())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[AutoAttack] Target is dead. Searching for next target..."));
+            return; // 다음 Tick에서 새 타겟 자동 탐색
+        }
+    }
+    else if (const UCharacterStatsComponent* EnemyStats = Target->FindComponentByClass<UCharacterStatsComponent>())
+    {
+        if (EnemyStats->IsDead())
+        {
+            UE_LOG(LogTemp, Warning, TEXT("[AutoAttack] Target's stats report dead. Searching for next target..."));
+            return;
+        }
+    }
+
+    // 투사체 발사
     FRotator BaseRotation = GetFireRotation(Target);
-    int32 Count = StatsComponent->ProjectileCount; // 1. 스탯에서 Count를 가져옵니다.
+    int32 Count = StatsComponent->ProjectileCount;
     FVector SpawnLocation = GetOwner()->GetActorLocation() + FVector(0, 0, 50.0f);
 
-    // 2. 여러 발 발사를 위한 각도 계산
+    // 여러 발 발사를 위한 각도 계산
     float SpreadAngle = 10.0f; // 총알 사이의 각도 (10도)
     float HalfAngle = SpreadAngle * (Count - 1) / 2.0f; // 전체 각도의 절반
 
@@ -135,11 +191,17 @@ void UAutoAttackComponent::FireProjectile()
             FinalRotation.Yaw += CurrentAngle;
         }
 
+        APlayerCharacter* OwnerChar = Cast<APlayerCharacter>(GetOwner());
         FActorSpawnParameters Params;
-        Params.Owner = GetOwner();
-        Params.Instigator = GetOwner()->GetInstigator();
+        Params.Owner = OwnerChar;
+        Params.Instigator = OwnerChar;
 
         Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn; // 최초생성 충돌 방지용
+
+        if (i == 0)
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetOwner()->GetActorLocation());
+        }
 
         // 투사체 생성
         AActor* NewActor = World->SpawnActor<AActor>(ProjectileClass, SpawnLocation, FinalRotation, Params);
@@ -151,11 +213,30 @@ void UAutoAttackComponent::FireProjectile()
                 Projectile->ProjectileMovement->Velocity = FinalRotation.Vector() * Projectile->ProjectileMovement->InitialSpeed;
             }
             Projectile->InitializeProjectile(StatsComponent->AttackDamage);
-            UE_LOG(LogTemp, Warning, TEXT("Projectile on Spawn test"));
         }
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("Spawned Projectile is not of type AProjectile. Damage value not set."));
         }
+    }
+}
+
+void UAutoAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+    if (!StatsComponent || !GetWorld())
+        return;
+
+    // 공격속도 변경 감지
+    if (!FMath::IsNearlyEqual(StatsComponent->AttackSpeed, LastAttackSpeed))
+    {
+        LastAttackSpeed = StatsComponent->AttackSpeed;
+
+        // 타이머 갱신
+        GetWorld()->GetTimerManager().ClearTimer(AttackTimerHandle);
+        StartAutoAttack();
+
+        UE_LOG(LogTemp, Warning, TEXT("[AutoAttack] AttackSpeed changed → Timer restarted (%.2f)"), StatsComponent->AttackSpeed);
     }
 }

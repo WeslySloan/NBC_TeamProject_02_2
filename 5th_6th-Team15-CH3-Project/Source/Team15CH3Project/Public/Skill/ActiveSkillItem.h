@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Skill/Base_item.h"
+#include "TimerManager.h"
+#include "Skill/Actor/PowerSurgeBullet.h"
 #include "ActiveSkillItem.generated.h"
 
 UENUM(BluePrintType)
@@ -34,6 +36,33 @@ struct FActiveSkillItemData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	int32 StackCnt;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	int32 MaxStackCnt;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	int32 CoolTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	int32 MaxCoolTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	bool bIsCoolingDown = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	bool UseingSkill;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActiveSkillItem")
+	int32 UseMana;
+
+	FTimerHandle CooldownTimerHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PercentStack = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SkilI")
+	TSubclassOf<AActor> ActiveItemClass;
+
 };
 
 UCLASS()
@@ -50,7 +79,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	FActiveSkillItemData ActiveSkillData;
 
-protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill")
 	EActiveSkillItemType ActiveType;
+
+private:
+	FTimerHandle CooldownTimerHandle;
 };

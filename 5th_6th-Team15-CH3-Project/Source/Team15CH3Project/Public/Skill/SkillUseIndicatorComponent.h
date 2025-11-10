@@ -31,6 +31,9 @@ public:
 	UPROPERTY()
 	AActor* SpawnedIndicatorActor;
 
+	UFUNCTION(BlueprintCallable)
+	AActor* GetSpawnedIndicatorActor() const { return SpawnedIndicatorActor; }
+
 private:
 	bool bIsVisible;
 

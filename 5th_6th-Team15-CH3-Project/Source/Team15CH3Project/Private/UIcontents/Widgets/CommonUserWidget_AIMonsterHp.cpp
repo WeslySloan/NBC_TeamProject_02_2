@@ -1,0 +1,8 @@
+#include "UIcontents/Widgets/CommonUserWidget_AIMonsterHp.h"
+#include "AI_Monster/AI_Monsters.h"
+#include "AI_Monster/AIMonsterCharacter.h"
+#include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/Actor.h"

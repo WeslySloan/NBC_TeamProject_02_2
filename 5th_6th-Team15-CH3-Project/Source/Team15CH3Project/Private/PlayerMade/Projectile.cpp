@@ -22,6 +22,8 @@ AProjectile::AProjectile()
 
     CollisionComp->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 
+    CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
+
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComp"));
     ProjectileMovement->UpdatedComponent = CollisionComp;
     ProjectileMovement->InitialSpeed = 3000.0f;
@@ -34,18 +36,10 @@ void AProjectile::BeginPlay()
 {
     Super::BeginPlay();
 
-    /// 추가됨
-    CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    // 스폰 후 잠시 후에 활성화
-    FTimerHandle TimerHandle;
-    GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-        {
-            if (CollisionComp)
-                CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly); // Overlap 전용 활성화
-        }, 0.05f, false);
-    CollisionComp->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnBeginOverlap);
-    /// 
-
+    if (!GetOwner() && GetInstigator())
+    {
+        SetOwner(GetInstigator());
+    }
 }
 
 // Overlap 이벤트 처리 함수 구현
@@ -54,18 +48,23 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
     // 자신을 발사한 캐릭터(Owner)와 충돌하는 것은 무시
     if (OtherActor && OtherActor != this && OtherActor != GetOwner())
     {
+        // OtherActor가 다른 AProjectile 인스턴스라면 Overlap 처리를 무시하고 즉시 종료합니다.
+        if (OtherActor->IsA(AProjectile::StaticClass()))
+        {
+            return;
+        }
+
         if (OtherActor->IsA(AAI_Monsters::StaticClass()))
         {
             // 이 조건문을 통과했으므로 몬스터에게 데미지를 적용합니다.
             UE_LOG(LogTemp, Warning, TEXT("Projectile Overlapped Monster: %s. Damage: %f"), *OtherActor->GetName(), Damage);
 
             // 데미지 적용
+            AController* InstigatorController = GetInstigatorController();
             UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, NULL);
         }
 
-        UE_LOG(LogTemp, Warning, TEXT("Test2"));
-
-        // Overlap 발생 후 파괴
+        // Overlap 발생 후 파괴 (다른 모든 대상과의 충돌 시 파괴)
         Destroy();
     }
 }
@@ -73,28 +72,4 @@ void AProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 void AProjectile::InitializeProjectile(float InitialDamage)
 {
     Damage = InitialDamage;
-    // 발사 방향 설정은 AutoAttackComponent에서 ProjectileMovement::Velocity를 직접 설정합니다.
 }
-
-
-//void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-//{
-//    if (OtherActor && OtherActor != this && OtherActor != GetOwner())
-//    {
-//        if (OtherActor->IsA(APawn::StaticClass()))
-//        {
-//            UE_LOG(LogTemp, Warning, TEXT("Projectile hit Monster: %s. Damage: %f"), *OtherActor->GetName(), Damage);
-//            UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, NULL);
-//        }
-//        UE_LOG(LogTemp, Warning, TEXT("Test2"));
-//        // 충돌 후 파괴
-//        Destroy();
-//    }
-//    else 
-//    {
-//        // OtherActor && OtherActor != this && OtherActor != GetOwner()
-//        // 타이머 걸어서 Destory 시키기
-//
-//        // 이걸로 투사체 안없어지면 else if로 삭제시키기
-//    }
-//}

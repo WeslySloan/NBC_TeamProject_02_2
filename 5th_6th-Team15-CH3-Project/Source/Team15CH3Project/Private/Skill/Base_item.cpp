@@ -4,18 +4,6 @@
 ABase_item::ABase_item()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
-	SetRootComponent(Scene);
-
-	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	Collision->SetupAttachment(Scene);
-
-	CastingTimeOut = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CastingTimeOut"));
-	CastingTimeOut->SetupAttachment(Collision);
-
-	CastingTimeIn = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CastingTimeIn"));
-	CastingTimeIn->SetupAttachment(Collision);
 }
 
 
